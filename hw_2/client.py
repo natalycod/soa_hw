@@ -6,7 +6,6 @@ import grpc
 import mafia_pb2
 import mafia_pb2_grpc
 import threading
-from typing import Iterator
 from concurrent.futures import ThreadPoolExecutor
 from queue import Queue
 
@@ -66,7 +65,7 @@ class UserSession:
             if command.startswith("chat "):
                 response = self._stub.SendChatMessage(mafia_pb2.SendChatMessageRequest(session_name=self.session_name, user_name=self.user_name, text=command[5:]))
                 self._handle_common_response_error(response)
-            if command.startswith("end_day"):
+            if command == "end_day":
                 response = self._stub.EndDay(mafia_pb2.EndDayRequest(session_name=self.session_name, user_name=self.user_name))
                 self._handle_common_response_error(response)
             if command.startswith("check "):
@@ -75,12 +74,17 @@ class UserSession:
             if command.startswith("kill "):
                 response = self._stub.KillUser(mafia_pb2.KillUserRequest(session_name=self.session_name, user_name=self.user_name, kill_name=command[5:]))
                 self._handle_common_response_error(response)
-            if command.startswith("publish"):
+            if command == "publish":
                 response = self._stub.Publish(mafia_pb2.PublishRequest(session_name=self.session_name, user_name=self.user_name))
                 self._handle_common_response_error(response)
             if command.startswith("blame "):
                 response = self._stub.Blame(mafia_pb2.BlameRequest(session_name=self.session_name, user_name=self.user_name, blame_name=command[6:]))
                 self._handle_common_response_error(response)
+            if command == "help":
+                response = self._stub.Help(mafia_pb2.HelpRequest())
+                for command in response.commands:
+                    print(bcolors.WARNING + bcolors.BOLD + command.command + ": " + bcolors.ENDC + bcolors.WARNING + command.explanation + bcolors.ENDC)
+
 
 print("Hi! Wanna play some mafia?")
 print("Enter name of session you want to connect to")

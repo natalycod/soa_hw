@@ -33,7 +33,6 @@ class ChatSession:
         if user_name not in self.users:
             self.users[user_name] = {}
         self.users[user_name][connection_type] = connection
-        print("got connection for", user_name, ":", connection_type)
         if len(self.users[user_name]) == 2:
             for user, connections in self.users.items():
                 send_message(connections["read"], "new_connection")
@@ -54,20 +53,15 @@ class ChatConnection:
 
         connection_type = connection.recv(1024).decode()
         self.connection_type = connection_type
-        print("received type:", connection_type)
         connection.send(connection_type.encode())
 
         session_name = connection.recv(1024).decode()
         self.session_name = session_name
-        print("received session:", session_name)
         connection.send(session_name.encode())
 
         user_name = connection.recv(1024).decode()
         self.user_name = user_name
-        print("received user:", user_name)
         connection.send(user_name.encode())
-
-        print("started", session_name, user_name)
 
         if self.session_name not in current_sessions:
             current_sessions[self.session_name] = ChatSession(self.session_name)
@@ -81,7 +75,6 @@ class ChatConnection:
         while True:
             data = self.connection.recv(1024).decode()
             if data:
-                print("received:", data)
                 self.session.send_all(self.user_name, data)
                 self.connection.send(data.encode())
 
@@ -96,8 +89,6 @@ class ChatServer:
     def _listen_to_new_connections(self):
         while True:
             connection, addr = self.sock.accept()
-            print("Connection from", addr)
-
             connection = ChatConnection(connection)
 
 chat_connection = ChatServer()

@@ -54,6 +54,11 @@ class MafiaStub(object):
                 request_serializer=mafia__pb2.BlameRequest.SerializeToString,
                 response_deserializer=mafia__pb2.CommonServerResponse.FromString,
                 )
+        self.Help = channel.unary_unary(
+                '/Mafia/Help',
+                request_serializer=mafia__pb2.HelpRequest.SerializeToString,
+                response_deserializer=mafia__pb2.HelpResponse.FromString,
+                )
         self.GameStatus = channel.unary_unary(
                 '/Mafia/GameStatus',
                 request_serializer=mafia__pb2.GameStatusRequest.SerializeToString,
@@ -112,6 +117,12 @@ class MafiaServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def Help(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def GameStatus(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -160,6 +171,11 @@ def add_MafiaServicer_to_server(servicer, server):
                     servicer.Blame,
                     request_deserializer=mafia__pb2.BlameRequest.FromString,
                     response_serializer=mafia__pb2.CommonServerResponse.SerializeToString,
+            ),
+            'Help': grpc.unary_unary_rpc_method_handler(
+                    servicer.Help,
+                    request_deserializer=mafia__pb2.HelpRequest.FromString,
+                    response_serializer=mafia__pb2.HelpResponse.SerializeToString,
             ),
             'GameStatus': grpc.unary_unary_rpc_method_handler(
                     servicer.GameStatus,
@@ -309,6 +325,23 @@ class Mafia(object):
         return grpc.experimental.unary_unary(request, target, '/Mafia/Blame',
             mafia__pb2.BlameRequest.SerializeToString,
             mafia__pb2.CommonServerResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def Help(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/Mafia/Help',
+            mafia__pb2.HelpRequest.SerializeToString,
+            mafia__pb2.HelpResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

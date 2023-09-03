@@ -9,6 +9,7 @@ service Mafia {
     rpc EndDay(EndDayRequest) returns (CommonServerResponse) {}
     rpc Publish(PublishRequest) returns (CommonServerResponse) {}
     rpc Blame(BlameRequest) returns (CommonServerResponse) {}
+    rpc Help(HelpRequest) returns (HelpResponse) {}
     rpc GameStatus(GameStatusRequest) returns (GameStatusResponse) {}
 }
 
@@ -87,6 +88,17 @@ message CommonServerResponse {
 
     message CommonError {
         string error_text = 1;
+    }
+}
+
+message HelpRequest {}
+
+message HelpResponse {
+    repeated Command commands = 1;
+
+    message Command {
+        string command = 1;
+        string explanation = 2;
     }
 }
 

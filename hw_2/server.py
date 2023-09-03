@@ -394,6 +394,19 @@ class MafiaConnection(mafia_pb2_grpc.MafiaServicer):
         resp = current_sessions[request.session_name].blame(request.user_name, request.blame_name)
         return self._HandleCommonResponse(resp)
     
+    def Help(self, request, context):
+        commands = {"help": "prints all the commmands with explanations",
+                    "chat {text}": "send {text} to all players in your session",
+                    "end_day": "you can send this command at day when you are ready to end day. Day will be ended when all alive users are ready",
+                    "check {user_name}": "if you're comissar, you can check {user_name} at night. You will immediatly know if it's mafia or not",
+                    "kill {user_name}": "if you're mafia, you can kill {user_name} at night. This person will die at morning",
+                    "publish": "if you're comissar and found mafia, you can print publish and all the users will receive the mafia's name",
+                    "blame {user_name}": "you can blame {user_name} at day. The person, who will be blamed with more than a half alive users, will die at evening"}
+        result = mafia_pb2.HelpResponse(commands=[])
+        for com, expl in commands.items():
+            result.commands.append(mafia_pb2.HelpResponse.Command(command=com, explanation=expl))
+        return result
+
     def GameStatus(self, request, context):
         if request.session_name not in current_sessions:
             return mafia_pb2.GameStatusResponse(status=GameStage.NOT_STARTED.value)
