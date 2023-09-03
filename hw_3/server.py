@@ -1,9 +1,23 @@
 import socket
 import threading
 
+import grpc
+import mafia_pb2
+import mafia_pb2_grpc
+from concurrent.futures import ThreadPoolExecutor
+
 PORT = 50053
 
 current_sessions = {}
+
+def get_game_status(session_name):
+    with grpc.insecure_channel("localhost:50051") as channel:
+        executor = ThreadPoolExecutor()
+        stub = mafia_pb2_grpc.MafiaStub(channel)
+        print("Sending game status request")
+        resp = stub.GameStatus(mafia_pb2.GameStatusRequest(session_name=session_name))
+        print("Received game status response: " + resp.status)
+        return resp.status
 
 def send_message(sock, message):
     sock.send(message.encode())
@@ -13,8 +27,9 @@ def send_message(sock, message):
         amount_received += len(data)
 
 class ChatSession:
-    def __init__(self):
+    def __init__(self, session_name):
         self.users = {}
+        self.session_name = session_name
 
     def add_user(self, user_name, connection_type, connection):
         if user_name not in self.users:
@@ -28,6 +43,11 @@ class ChatSession:
                 send_message(connections["read"], ", ".join(self.users.keys()))
 
     def send_all(self, user_name, message):
+        try:
+            if get_game_status(self.session_name) == "night":
+                return
+        except:
+            print("not success :(")
         for user, connections in self.users.items():
             send_message(connections["read"], "new_message")
             send_message(connections["read"], user_name)
@@ -55,7 +75,7 @@ class ChatConnection:
         print("started", session_name, user_name)
 
         if self.session_name not in current_sessions:
-            current_sessions[self.session_name] = ChatSession()
+            current_sessions[self.session_name] = ChatSession(self.session_name)
         self.session = current_sessions[self.session_name]
         self.session.add_user(self.user_name, self.connection_type, self.connection)
 

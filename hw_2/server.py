@@ -393,7 +393,12 @@ class MafiaConnection(mafia_pb2_grpc.MafiaServicer):
     def Blame(self, request, context):
         resp = current_sessions[request.session_name].blame(request.user_name, request.blame_name)
         return self._HandleCommonResponse(resp)
-
+    
+    def GameStatus(self, request, context):
+        if request.session_name not in current_sessions:
+            return mafia_pb2.GameStatusResponse(status=GameStage.NOT_STARTED.value)
+        status = current_sessions[request.session_name].game_stage
+        return mafia_pb2.GameStatusResponse(status=status.value)
 
 port = "50051"
 server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
