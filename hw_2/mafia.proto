@@ -16,6 +16,7 @@ service Mafia {
 message ConnectToServerMessage {
     string session_name = 1;
     string user_name = 2;
+    int32 users_count = 3;
 }
 
 message GetMessageRequest {

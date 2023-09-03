@@ -1,7 +1,6 @@
 from __future__ import print_function
 
-import logging
-
+import sys
 import grpc
 import mafia_pb2
 import mafia_pb2_grpc
@@ -21,10 +20,11 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 class UserSession:
-    def __init__(self, executor, channel, session_name, user_name):
+    def __init__(self, executor, channel, session_name, user_name, users_count):
         self.session_name = session_name
         self.user_name = user_name
         self.connected = False
+        self.users_count = users_count
 
         self._executor = executor
         self._channel = channel
@@ -38,7 +38,7 @@ class UserSession:
         session_id = queue.get()
 
     def listen_for_messages(self):
-        response = self._stub.ConnectToServer(mafia_pb2.ConnectToServerMessage(session_name=self.session_name, user_name=self.user_name))
+        response = self._stub.ConnectToServer(mafia_pb2.ConnectToServerMessage(session_name=self.session_name, user_name=self.user_name, users_count=self.users_count))
         if response.HasField("common_error"):
             print("error: " + response.common_error.error_text)
         
@@ -85,17 +85,18 @@ class UserSession:
                 for command in response.commands:
                     print(bcolors.WARNING + bcolors.BOLD + command.command + ": " + bcolors.ENDC + bcolors.WARNING + command.explanation + bcolors.ENDC)
 
+if len(sys.argv) < 3:
+    print(bcolors.FAIL + "Please run the command with 2 additional parameters in this order:" + bcolors.ENDC)
+    print(bcolors.OKBLUE + bcolors.BOLD + "session_name (required):" + bcolors.ENDC + bcolors.OKBLUE + "name of session you want to connect to" + bcolors.ENDC)
+    print(bcolors.OKBLUE + bcolors.BOLD + "user_name (required):" + bcolors.ENDC + bcolors.OKBLUE + "your nickname in game" + bcolors.ENDC)
+    exit(0)
 
-print("Hi! Wanna play some mafia?")
-print("Enter name of session you want to connect to")
-session_name = input()
-print("Enter your username")
-user_name = input()
-
+session_name = sys.argv[1]
+user_name = sys.argv[2]
+users_count = 0
+if len(sys.argv) >= 4:
+    users_count = int(sys.argv[3])
 
 with grpc.insecure_channel("localhost:50051") as channel:
     executor = ThreadPoolExecutor()
-    user_session = UserSession(executor, channel, session_name, user_name)
-
-while True:
-    pass
+    user_session = UserSession(executor, channel, session_name, user_name, users_count)

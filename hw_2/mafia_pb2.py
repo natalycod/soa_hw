@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0bmafia.proto\"A\n\x16\x43onnectToServerMessage\x12\x14\n\x0csession_name\x18\x01 \x01(\t\x12\x11\n\tuser_name\x18\x02 \x01(\t\"<\n\x11GetMessageRequest\x12\x14\n\x0csession_name\x18\x01 \x01(\t\x12\x11\n\tuser_name\x18\x02 \x01(\t\"O\n\x10\x43heckUserRequest\x12\x14\n\x0csession_name\x18\x01 \x01(\t\x12\x11\n\tuser_name\x18\x02 \x01(\t\x12\x12\n\ncheck_name\x18\x03 \x01(\t\"M\n\x0fKillUserRequest\x12\x14\n\x0csession_name\x18\x01 \x01(\t\x12\x11\n\tuser_name\x18\x02 \x01(\t\x12\x11\n\tkill_name\x18\x03 \x01(\t\"O\n\x16SendChatMessageRequest\x12\x14\n\x0csession_name\x18\x01 \x01(\t\x12\x11\n\tuser_name\x18\x02 \x01(\t\x12\x0c\n\x04text\x18\x03 \x01(\t\"8\n\rEndDayRequest\x12\x14\n\x0csession_name\x18\x01 \x01(\t\x12\x11\n\tuser_name\x18\x02 \x01(\t\"9\n\x0ePublishRequest\x12\x14\n\x0csession_name\x18\x01 \x01(\t\x12\x11\n\tuser_name\x18\x02 \x01(\t\"K\n\x0c\x42lameRequest\x12\x14\n\x0csession_name\x18\x01 \x01(\t\x12\x11\n\tuser_name\x18\x02 \x01(\t\x12\x12\n\nblame_name\x18\x03 \x01(\t\"\xd9\x02\n\x12GetMessageResponse\x12\x37\n\x0cnone_message\x18\x01 \x01(\x0b\x32\x1f.GetMessageResponse.NoneMessageH\x00\x12;\n\x0eserver_message\x18\x02 \x01(\x0b\x32!.GetMessageResponse.ServerMessageH\x00\x12\x37\n\x0cuser_message\x18\x03 \x01(\x0b\x32\x1f.GetMessageResponse.UserMessageH\x00\x1a\r\n\x0bNoneMessage\x1a\x31\n\rServerMessage\x12\x0c\n\x04text\x18\x01 \x01(\t\x12\x12\n\nmajor_type\x18\x02 \x01(\x08\x1a\x42\n\x0bUserMessage\x12\x11\n\tuser_name\x18\x01 \x01(\t\x12\x0c\n\x04text\x18\x02 \x01(\t\x12\x12\n\nmajor_type\x18\x03 \x01(\x08\x42\x0e\n\x0cmessage_type\"\xd1\x01\n\x14\x43ommonServerResponse\x12;\n\rempty_message\x18\x01 \x01(\x0b\x32\".CommonServerResponse.EmptyMessageH\x00\x12\x39\n\x0c\x63ommon_error\x18\x02 \x01(\x0b\x32!.CommonServerResponse.CommonErrorH\x00\x1a\x0e\n\x0c\x45mptyMessage\x1a!\n\x0b\x43ommonError\x12\x12\n\nerror_text\x18\x01 \x01(\tB\x0e\n\x0cmessage_type\"\r\n\x0bHelpRequest\"h\n\x0cHelpResponse\x12\'\n\x08\x63ommands\x18\x01 \x03(\x0b\x32\x15.HelpResponse.Command\x1a/\n\x07\x43ommand\x12\x0f\n\x07\x63ommand\x18\x01 \x01(\t\x12\x13\n\x0b\x65xplanation\x18\x02 \x01(\t\")\n\x11GameStatusRequest\x12\x14\n\x0csession_name\x18\x01 \x01(\t\"$\n\x12GameStatusResponse\x12\x0e\n\x06status\x18\x01 \x01(\t2\xb6\x04\n\x05Mafia\x12\x43\n\x0f\x43onnectToServer\x12\x17.ConnectToServerMessage\x1a\x15.CommonServerResponse\"\x00\x12:\n\rGetNewMessage\x12\x12.GetMessageRequest\x1a\x13.GetMessageResponse\"\x00\x12\x37\n\tCheckUser\x12\x11.CheckUserRequest\x1a\x15.CommonServerResponse\"\x00\x12\x35\n\x08KillUser\x12\x10.KillUserRequest\x1a\x15.CommonServerResponse\"\x00\x12\x43\n\x0fSendChatMessage\x12\x17.SendChatMessageRequest\x1a\x15.CommonServerResponse\"\x00\x12\x31\n\x06\x45ndDay\x12\x0e.EndDayRequest\x1a\x15.CommonServerResponse\"\x00\x12\x33\n\x07Publish\x12\x0f.PublishRequest\x1a\x15.CommonServerResponse\"\x00\x12/\n\x05\x42lame\x12\r.BlameRequest\x1a\x15.CommonServerResponse\"\x00\x12%\n\x04Help\x12\x0c.HelpRequest\x1a\r.HelpResponse\"\x00\x12\x37\n\nGameStatus\x12\x12.GameStatusRequest\x1a\x13.GameStatusResponse\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\x0bmafia.proto\"V\n\x16\x43onnectToServerMessage\x12\x14\n\x0csession_name\x18\x01 \x01(\t\x12\x11\n\tuser_name\x18\x02 \x01(\t\x12\x13\n\x0busers_count\x18\x03 \x01(\x05\"<\n\x11GetMessageRequest\x12\x14\n\x0csession_name\x18\x01 \x01(\t\x12\x11\n\tuser_name\x18\x02 \x01(\t\"O\n\x10\x43heckUserRequest\x12\x14\n\x0csession_name\x18\x01 \x01(\t\x12\x11\n\tuser_name\x18\x02 \x01(\t\x12\x12\n\ncheck_name\x18\x03 \x01(\t\"M\n\x0fKillUserRequest\x12\x14\n\x0csession_name\x18\x01 \x01(\t\x12\x11\n\tuser_name\x18\x02 \x01(\t\x12\x11\n\tkill_name\x18\x03 \x01(\t\"O\n\x16SendChatMessageRequest\x12\x14\n\x0csession_name\x18\x01 \x01(\t\x12\x11\n\tuser_name\x18\x02 \x01(\t\x12\x0c\n\x04text\x18\x03 \x01(\t\"8\n\rEndDayRequest\x12\x14\n\x0csession_name\x18\x01 \x01(\t\x12\x11\n\tuser_name\x18\x02 \x01(\t\"9\n\x0ePublishRequest\x12\x14\n\x0csession_name\x18\x01 \x01(\t\x12\x11\n\tuser_name\x18\x02 \x01(\t\"K\n\x0c\x42lameRequest\x12\x14\n\x0csession_name\x18\x01 \x01(\t\x12\x11\n\tuser_name\x18\x02 \x01(\t\x12\x12\n\nblame_name\x18\x03 \x01(\t\"\xd9\x02\n\x12GetMessageResponse\x12\x37\n\x0cnone_message\x18\x01 \x01(\x0b\x32\x1f.GetMessageResponse.NoneMessageH\x00\x12;\n\x0eserver_message\x18\x02 \x01(\x0b\x32!.GetMessageResponse.ServerMessageH\x00\x12\x37\n\x0cuser_message\x18\x03 \x01(\x0b\x32\x1f.GetMessageResponse.UserMessageH\x00\x1a\r\n\x0bNoneMessage\x1a\x31\n\rServerMessage\x12\x0c\n\x04text\x18\x01 \x01(\t\x12\x12\n\nmajor_type\x18\x02 \x01(\x08\x1a\x42\n\x0bUserMessage\x12\x11\n\tuser_name\x18\x01 \x01(\t\x12\x0c\n\x04text\x18\x02 \x01(\t\x12\x12\n\nmajor_type\x18\x03 \x01(\x08\x42\x0e\n\x0cmessage_type\"\xd1\x01\n\x14\x43ommonServerResponse\x12;\n\rempty_message\x18\x01 \x01(\x0b\x32\".CommonServerResponse.EmptyMessageH\x00\x12\x39\n\x0c\x63ommon_error\x18\x02 \x01(\x0b\x32!.CommonServerResponse.CommonErrorH\x00\x1a\x0e\n\x0c\x45mptyMessage\x1a!\n\x0b\x43ommonError\x12\x12\n\nerror_text\x18\x01 \x01(\tB\x0e\n\x0cmessage_type\"\r\n\x0bHelpRequest\"h\n\x0cHelpResponse\x12\'\n\x08\x63ommands\x18\x01 \x03(\x0b\x32\x15.HelpResponse.Command\x1a/\n\x07\x43ommand\x12\x0f\n\x07\x63ommand\x18\x01 \x01(\t\x12\x13\n\x0b\x65xplanation\x18\x02 \x01(\t\")\n\x11GameStatusRequest\x12\x14\n\x0csession_name\x18\x01 \x01(\t\"$\n\x12GameStatusResponse\x12\x0e\n\x06status\x18\x01 \x01(\t2\xb6\x04\n\x05Mafia\x12\x43\n\x0f\x43onnectToServer\x12\x17.ConnectToServerMessage\x1a\x15.CommonServerResponse\"\x00\x12:\n\rGetNewMessage\x12\x12.GetMessageRequest\x1a\x13.GetMessageResponse\"\x00\x12\x37\n\tCheckUser\x12\x11.CheckUserRequest\x1a\x15.CommonServerResponse\"\x00\x12\x35\n\x08KillUser\x12\x10.KillUserRequest\x1a\x15.CommonServerResponse\"\x00\x12\x43\n\x0fSendChatMessage\x12\x17.SendChatMessageRequest\x1a\x15.CommonServerResponse\"\x00\x12\x31\n\x06\x45ndDay\x12\x0e.EndDayRequest\x1a\x15.CommonServerResponse\"\x00\x12\x33\n\x07Publish\x12\x0f.PublishRequest\x1a\x15.CommonServerResponse\"\x00\x12/\n\x05\x42lame\x12\r.BlameRequest\x1a\x15.CommonServerResponse\"\x00\x12%\n\x04Help\x12\x0c.HelpRequest\x1a\r.HelpResponse\"\x00\x12\x37\n\nGameStatus\x12\x12.GameStatusRequest\x1a\x13.GameStatusResponse\"\x00\x62\x06proto3'
 )
 
 
@@ -47,6 +47,13 @@ _CONNECTTOSERVERMESSAGE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='users_count', full_name='ConnectToServerMessage.users_count', index=2,
+      number=3, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -60,7 +67,7 @@ _CONNECTTOSERVERMESSAGE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=15,
-  serialized_end=80,
+  serialized_end=101,
 )
 
 
@@ -98,8 +105,8 @@ _GETMESSAGEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=82,
-  serialized_end=142,
+  serialized_start=103,
+  serialized_end=163,
 )
 
 
@@ -144,8 +151,8 @@ _CHECKUSERREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=144,
-  serialized_end=223,
+  serialized_start=165,
+  serialized_end=244,
 )
 
 
@@ -190,8 +197,8 @@ _KILLUSERREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=225,
-  serialized_end=302,
+  serialized_start=246,
+  serialized_end=323,
 )
 
 
@@ -236,8 +243,8 @@ _SENDCHATMESSAGEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=304,
-  serialized_end=383,
+  serialized_start=325,
+  serialized_end=404,
 )
 
 
@@ -275,8 +282,8 @@ _ENDDAYREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=385,
-  serialized_end=441,
+  serialized_start=406,
+  serialized_end=462,
 )
 
 
@@ -314,8 +321,8 @@ _PUBLISHREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=443,
-  serialized_end=500,
+  serialized_start=464,
+  serialized_end=521,
 )
 
 
@@ -360,8 +367,8 @@ _BLAMEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=502,
-  serialized_end=577,
+  serialized_start=523,
+  serialized_end=598,
 )
 
 
@@ -385,8 +392,8 @@ _GETMESSAGERESPONSE_NONEMESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=777,
-  serialized_end=790,
+  serialized_start=798,
+  serialized_end=811,
 )
 
 _GETMESSAGERESPONSE_SERVERMESSAGE = _descriptor.Descriptor(
@@ -423,8 +430,8 @@ _GETMESSAGERESPONSE_SERVERMESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=792,
-  serialized_end=841,
+  serialized_start=813,
+  serialized_end=862,
 )
 
 _GETMESSAGERESPONSE_USERMESSAGE = _descriptor.Descriptor(
@@ -468,8 +475,8 @@ _GETMESSAGERESPONSE_USERMESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=843,
-  serialized_end=909,
+  serialized_start=864,
+  serialized_end=930,
 )
 
 _GETMESSAGERESPONSE = _descriptor.Descriptor(
@@ -518,8 +525,8 @@ _GETMESSAGERESPONSE = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=580,
-  serialized_end=925,
+  serialized_start=601,
+  serialized_end=946,
 )
 
 
@@ -543,8 +550,8 @@ _COMMONSERVERRESPONSE_EMPTYMESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1072,
-  serialized_end=1086,
+  serialized_start=1093,
+  serialized_end=1107,
 )
 
 _COMMONSERVERRESPONSE_COMMONERROR = _descriptor.Descriptor(
@@ -574,8 +581,8 @@ _COMMONSERVERRESPONSE_COMMONERROR = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1088,
-  serialized_end=1121,
+  serialized_start=1109,
+  serialized_end=1142,
 )
 
 _COMMONSERVERRESPONSE = _descriptor.Descriptor(
@@ -617,8 +624,8 @@ _COMMONSERVERRESPONSE = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=928,
-  serialized_end=1137,
+  serialized_start=949,
+  serialized_end=1158,
 )
 
 
@@ -642,8 +649,8 @@ _HELPREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1139,
-  serialized_end=1152,
+  serialized_start=1160,
+  serialized_end=1173,
 )
 
 
@@ -681,8 +688,8 @@ _HELPRESPONSE_COMMAND = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1211,
-  serialized_end=1258,
+  serialized_start=1232,
+  serialized_end=1279,
 )
 
 _HELPRESPONSE = _descriptor.Descriptor(
@@ -712,8 +719,8 @@ _HELPRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1154,
-  serialized_end=1258,
+  serialized_start=1175,
+  serialized_end=1279,
 )
 
 
@@ -744,8 +751,8 @@ _GAMESTATUSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1260,
-  serialized_end=1301,
+  serialized_start=1281,
+  serialized_end=1322,
 )
 
 
@@ -776,8 +783,8 @@ _GAMESTATUSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1303,
-  serialized_end=1339,
+  serialized_start=1324,
+  serialized_end=1360,
 )
 
 _GETMESSAGERESPONSE_NONEMESSAGE.containing_type = _GETMESSAGERESPONSE
@@ -978,8 +985,8 @@ _MAFIA = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=1342,
-  serialized_end=1908,
+  serialized_start=1363,
+  serialized_end=1929,
   methods=[
   _descriptor.MethodDescriptor(
     name='ConnectToServer',

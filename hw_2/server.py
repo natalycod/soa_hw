@@ -9,7 +9,8 @@ import threading
 from queue import Queue
 from enum import Enum
 
-NEED_USERS_COUNT = 4
+MIN_USERS_COUNT = 4
+MAFIA_COEF = 4
 
 current_sessions = {}
 
@@ -62,8 +63,9 @@ class User:
         self.ready_to_end_night = False
         self.blamed_anyone = False
         self.blamed_count = 0
+        self.killed_count = 0
         self.alive = True
-        self.found_mafia = None
+        self.found_mafia = []
     
     def add_message(self, message):
         self.messages.put(message)
@@ -80,7 +82,8 @@ class User:
         self.add_message(message)
 
 class Session:
-    def __init__(self):
+    def __init__(self, users_count = MIN_USERS_COUNT):
+        self.need_users_count = users_count
         self.session_name = ""
         self.game_stage = GameStage.NOT_STARTED
         self.users = {}
@@ -97,6 +100,7 @@ class Session:
             user.ready_to_end_day = False
             user.ready_to_end_night = False
             user.blamed_count = 0
+            user.killed_count = 0
             user.blamed_anyone = False
             if not user.alive:
                 user.ready_to_end_day = True
@@ -117,7 +121,7 @@ class Session:
         self.stage_messages = []
 
     def _try_to_start_game(self):
-        if len(self.users) < NEED_USERS_COUNT:
+        if len(self.users) < self.need_users_count:
             return False
         self.game_stage = GameStage.DAY
         self._clear_stage()
@@ -128,9 +132,12 @@ class Session:
 
         current_users = [_name for _name, _user in self.users.items()]
         random.shuffle(current_users)
-        self.users[current_users[0]].set_role(Role.COMISSAR)
-        self.users[current_users[1]].set_role(Role.MAFIA)
-        for i in range(2, len(current_users)):
+        mafia_count = self.need_users_count // MAFIA_COEF
+        self.mafias = current_users[:mafia_count]
+        for i in range(mafia_count):
+            self.users[current_users[i]].set_role(Role.MAFIA)
+        self.users[current_users[mafia_count]].set_role(Role.COMISSAR)
+        for i in range(mafia_count + 1, len(current_users)):
             self.users[current_users[i]].set_role(Role.PEACEFUL)
         return True
 
@@ -149,6 +156,23 @@ class Session:
         self.users[blamed_user].alive = False
         message = Message()
         message.make_server_message("User " + blamed_user + " was killed by the crowd", True)
+        self.stage_messages.append(message)
+
+    def _kill_users(self):
+        alive_mafias = self._get_alive_mafias()
+        cnt_alive = len(alive_mafias)
+
+        killed_user = None
+        for name, user in self.users.items():
+            if user.killed_count * 2 > cnt_alive:
+                killed_user = name
+
+        message = Message()
+        if killed_user is None:
+            message.make_server_message("Nobody was killed by the mafia this night", True)
+        else:
+            self.users[killed_user].alive = False
+            message.make_server_message("User " + killed_user + " was killed by the mafia this night", True)
         self.stage_messages.append(message)
 
     def _try_to_end_day(self):
@@ -178,6 +202,7 @@ class Session:
     def _try_to_end_night(self):
         if self.ready_to_end_night_count < len(self.users):
             return False
+        self._kill_users()
         self.game_stage = GameStage.DAY
         self._clear_stage()
         for name, user in self.users.items():
@@ -229,6 +254,14 @@ class Session:
             elif self.game_stage == GameStage.NIGHT:
                 self._try_to_end_night()
 
+    def who_can_receive_messages(self, user_name):
+        if self.game_stage != GameStage.NIGHT:
+            return self.users.keys()
+        elif self.users[user_name].role == Role.MAFIA:
+            return self.mafias
+        else:
+            return []
+
     def add_user(self, user_name):
         self.users[user_name] = User(user_name)
         for name, user in self.users.items():
@@ -251,6 +284,13 @@ class Session:
         result = []
         for name, user in self.users.items():
             if user.alive:
+                result.append(name)
+        return result
+
+    def _get_alive_mafias(self):
+        result = []
+        for name, user in self.users.items():
+            if user.alive and user.role == Role.MAFIA:
                 result.append(name)
         return result
 
@@ -279,7 +319,7 @@ class Session:
         self.ready_to_end_night_count += 1
         message = Message()
         if self.users[check_name].role == Role.MAFIA:
-            self.users[user_name].found_mafia = check_name
+            self.users[user_name].found_mafia.append(check_name)
             message.make_server_message("Congrats! User " + check_name + " is mafia", False)
         else:
             message.make_server_message("Sorry! User " + check_name + " is not mafia. Try again next night", False)
@@ -297,27 +337,25 @@ class Session:
         if self.users[user_name].ready_to_end_night:
             return "You already killed someone this night! Wait for the next one"
         self.users[user_name].ready_to_end_night = True
+        self.users[kill_name].killed_count += 1
         self.ready_to_end_night_count += 1
-        self.users[kill_name].alive = False
         message = Message()
-        message.make_server_message("Fine! Consider " + kill_name + " dead", False)
+        message.make_server_message("Fine! You will try to kill " + kill_name + " this night", False)
         self.users[user_name].add_message(message)
-        night_message = Message()
-        night_message.make_server_message("User " + kill_name + " was killed last night", True)
-        self.stage_messages.append(night_message)
 
     def send_chat_message(self, user_name, text):
         if not self.users[user_name].alive:
             return "You can't chat, you're dead"
-        if self.game_stage == GameStage.NIGHT:
-            return "You can't chat at night"
-        for name, user in self.users.items():
+        receivers = self.who_can_receive_messages(user_name)
+        if len(receivers) == 0:
+            return "You can't chat now"
+        for name in receivers:
             message = Message()
             if name == user_name:
                 message.make_user_message(user_name, text, True)
             else:
                 message.make_user_message(user_name, text, False)
-            user.add_message(message)
+            self.users[name].add_message(message)
 
     def publish(self, user_name):
         if not self.users[user_name].alive:
@@ -326,14 +364,19 @@ class Session:
             return "You can publish your investigation only at day time"
         if self.users[user_name].role != Role.COMISSAR:
             return "Only comissar can post investigation"
-        if self.users[user_name].found_mafia is None:
+        if len(self.users[user_name].found_mafia) == 0:
             return "You didn't find mafia yet, you can't publish investigation"
         for name, user in self.users.items():
             message = Message()
-            if name == user_name:
-                message.make_server_message("Comissar published his investigations. It seams that " + self.users[user_name].found_mafia + " is mafia!", False)
+            text = "Comissar published his investigations. It seams that " + ", ".join(self.users[user_name].found_mafia)
+            if len(self.users[user_name].found_mafia) == 1:
+                text += " is mafia!"
             else:
-                message.make_server_message("Comissar published his investigations. It seams that " + self.users[user_name].found_mafia + " is mafia!", True)
+                text += " are mafias!"
+            if name == user_name:
+                message.make_server_message(text, False)
+            else:
+                message.make_server_message(text, True)
             user.add_message(message)
     
     def blame(self, user_name, blame_name):
@@ -351,7 +394,7 @@ class Session:
 class MafiaConnection(mafia_pb2_grpc.MafiaServicer):
     def ConnectToServer(self, request, context):
         if request.session_name not in current_sessions:
-            current_sessions[request.session_name] = Session()
+            current_sessions[request.session_name] = Session(max(request.users_count, MIN_USERS_COUNT))
         session = current_sessions[request.session_name]
         if request.user_name in current_sessions[request.session_name].users:
             return mafia_pb2.CommonServerResponse(common_error=mafia_pb2.CommonServerResponse.CommonError(error_text="User with name " + request.user_name + " already exists in session " + request.session_name))
