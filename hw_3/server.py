@@ -5,41 +5,52 @@ PORT = 50053
 
 current_sessions = {}
 
+def send_message(sock, message):
+    sock.send(message.encode())
+    amount_received = 0
+    while amount_received < len(message):
+        data = sock.recv(1024)
+        amount_received += len(data)
+
 class ChatSession:
     def __init__(self):
         self.users = {}
-    
+
     def add_user(self, user_name, connection_type, connection):
         if user_name not in self.users:
             self.users[user_name] = {}
         self.users[user_name][connection_type] = connection
         print("got connection for", user_name, ":", connection_type)
-    
+        if len(self.users[user_name]) == 2:
+            for user, connections in self.users.items():
+                send_message(connections["read"], "new_connection")
+                send_message(connections["read"], user_name)
+                send_message(connections["read"], ", ".join(self.users.keys()))
+
     def send_all(self, user_name, message):
         for user, connections in self.users.items():
-            if user != user_name:
-                connections["read"].send((user_name + ": " + message).encode())
+            send_message(connections["read"], "new_message")
+            send_message(connections["read"], user_name)
+            send_message(connections["read"], message)
 
 class ChatConnection:
     def __init__(self, connection):
         self.connection = connection
 
-        connection.send("here".encode())
+        connection_type = connection.recv(1024).decode()
+        self.connection_type = connection_type
+        print("received type:", connection_type)
+        connection.send(connection_type.encode())
 
-        connection_type = connection.recv(1024)
-        self.connection_type = connection_type.decode()
-        print("received type:", connection_type.decode())
-        connection.send(connection_type)
+        session_name = connection.recv(1024).decode()
+        self.session_name = session_name
+        print("received session:", session_name)
+        connection.send(session_name.encode())
 
-        session_name = connection.recv(1024)
-        self.session_name = session_name.decode()
-        print("received session:", session_name.decode())
-        connection.send(session_name)
-
-        user_name = connection.recv(1024)
-        self.user_name = user_name.decode()
-        print("received user:", user_name.decode())
-        connection.send(user_name)
+        user_name = connection.recv(1024).decode()
+        self.user_name = user_name
+        print("received user:", user_name)
+        connection.send(user_name.encode())
 
         print("started", session_name, user_name)
 
@@ -53,11 +64,11 @@ class ChatConnection:
 
     def _listen_to_messages(self):
         while True:
-            data = self.connection.recv(1024)
+            data = self.connection.recv(1024).decode()
             if data:
-                print("received:", data.decode())
-                self.session.send_all(self.user_name, data.decode())
-                self.connection.send(data)
+                print("received:", data)
+                self.session.send_all(self.user_name, data)
+                self.connection.send(data.encode())
 
 class ChatServer:
     def __init__(self):
