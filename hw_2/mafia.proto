@@ -10,7 +10,7 @@ service Mafia {
     rpc Publish(PublishRequest) returns (CommonServerResponse) {}
     rpc Blame(BlameRequest) returns (CommonServerResponse) {}
     rpc Help(HelpRequest) returns (HelpResponse) {}
-    rpc GameStatus(GameStatusRequest) returns (GameStatusResponse) {}
+    rpc ChatReceivers(ChatReceiversRequest) returns (ChatReceiversResponse) {}
 }
 
 message ConnectToServerMessage {
@@ -103,10 +103,12 @@ message HelpResponse {
     }
 }
 
-message GameStatusRequest {
+message ChatReceiversRequest {
     string session_name = 1;
+    string user_name = 2;
 }
 
-message GameStatusResponse {
-    string status = 1;
+message ChatReceiversResponse {
+    bool in_game = 1;
+    repeated string receivers = 2;
 }

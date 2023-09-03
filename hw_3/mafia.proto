@@ -1,13 +1,15 @@
 syntax = "proto3";
 
 service Mafia {
-    rpc GameStatus(GameStatusRequest) returns (GameStatusResponse) {}
+    rpc ChatReceivers(ChatReceiversRequest) returns (ChatReceiversResponse) {}
 }
 
-message GameStatusRequest {
+message ChatReceiversRequest {
     string session_name = 1;
+    string user_name = 2;
 }
 
-message GameStatusResponse {
-    string status = 1;
+message ChatReceiversResponse {
+    bool in_game = 1;
+    repeated string receivers = 2;
 }

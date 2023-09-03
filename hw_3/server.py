@@ -6,16 +6,9 @@ import mafia_pb2
 import mafia_pb2_grpc
 from concurrent.futures import ThreadPoolExecutor
 
-PORT = 50053
+PORT = 50052
 
 current_sessions = {}
-
-def get_game_status(session_name):
-    with grpc.insecure_channel("localhost:50051") as channel:
-        executor = ThreadPoolExecutor()
-        stub = mafia_pb2_grpc.MafiaStub(channel)
-        resp = stub.GameStatus(mafia_pb2.GameStatusRequest(session_name=session_name))
-        return resp.status
 
 def send_message(sock, message):
     sock.send(message.encode())
@@ -29,6 +22,19 @@ class ChatSession:
         self.users = {}
         self.session_name = session_name
 
+    def get_chat_receivers(self, user_name):
+        with grpc.insecure_channel("localhost:50051") as channel:
+            executor = ThreadPoolExecutor()
+            stub = mafia_pb2_grpc.MafiaStub(channel)
+            resp = stub.ChatReceivers(mafia_pb2.ChatReceiversRequest(session_name=self.session_name, user_name=user_name))
+            if not resp.in_game:
+                return self.users.keys()
+            result = []
+            for receiver in resp.receivers:
+                if receiver in self.users:
+                    result.append(receiver)
+            return result
+
     def add_user(self, user_name, connection_type, connection):
         if user_name not in self.users:
             self.users[user_name] = {}
@@ -40,12 +46,11 @@ class ChatSession:
                 send_message(connections["read"], ", ".join(self.users.keys()))
 
     def send_all(self, user_name, message):
-        if get_game_status(self.session_name) == "night":
-            return
-        for user, connections in self.users.items():
-            send_message(connections["read"], "new_message")
-            send_message(connections["read"], user_name)
-            send_message(connections["read"], message)
+        receivers = self.get_chat_receivers(user_name)
+        for user in receivers:
+            send_message(self.users[user]["read"], "new_message")
+            send_message(self.users[user]["read"], user_name)
+            send_message(self.users[user]["read"], message)
 
 class ChatConnection:
     def __init__(self, connection):

@@ -449,12 +449,11 @@ class MafiaConnection(mafia_pb2_grpc.MafiaServicer):
         for com, expl in commands.items():
             result.commands.append(mafia_pb2.HelpResponse.Command(command=com, explanation=expl))
         return result
-
-    def GameStatus(self, request, context):
+    
+    def ChatReceivers(self, request, context):
         if request.session_name not in current_sessions:
-            return mafia_pb2.GameStatusResponse(status=GameStage.NOT_STARTED.value)
-        status = current_sessions[request.session_name].game_stage
-        return mafia_pb2.GameStatusResponse(status=status.value)
+            return mafia_pb2.ChatReceiversResponse(in_game=False, receivers=[])
+        return mafia_pb2.ChatReceiversResponse(in_game=True, receivers=current_sessions[request.session_name].who_can_receive_messages(request.user_name))
 
 port = "50051"
 server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))

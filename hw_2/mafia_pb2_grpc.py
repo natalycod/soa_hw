@@ -59,10 +59,10 @@ class MafiaStub(object):
                 request_serializer=mafia__pb2.HelpRequest.SerializeToString,
                 response_deserializer=mafia__pb2.HelpResponse.FromString,
                 )
-        self.GameStatus = channel.unary_unary(
-                '/Mafia/GameStatus',
-                request_serializer=mafia__pb2.GameStatusRequest.SerializeToString,
-                response_deserializer=mafia__pb2.GameStatusResponse.FromString,
+        self.ChatReceivers = channel.unary_unary(
+                '/Mafia/ChatReceivers',
+                request_serializer=mafia__pb2.ChatReceiversRequest.SerializeToString,
+                response_deserializer=mafia__pb2.ChatReceiversResponse.FromString,
                 )
 
 
@@ -123,7 +123,7 @@ class MafiaServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def GameStatus(self, request, context):
+    def ChatReceivers(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -177,10 +177,10 @@ def add_MafiaServicer_to_server(servicer, server):
                     request_deserializer=mafia__pb2.HelpRequest.FromString,
                     response_serializer=mafia__pb2.HelpResponse.SerializeToString,
             ),
-            'GameStatus': grpc.unary_unary_rpc_method_handler(
-                    servicer.GameStatus,
-                    request_deserializer=mafia__pb2.GameStatusRequest.FromString,
-                    response_serializer=mafia__pb2.GameStatusResponse.SerializeToString,
+            'ChatReceivers': grpc.unary_unary_rpc_method_handler(
+                    servicer.ChatReceivers,
+                    request_deserializer=mafia__pb2.ChatReceiversRequest.FromString,
+                    response_serializer=mafia__pb2.ChatReceiversResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -346,7 +346,7 @@ class Mafia(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def GameStatus(request,
+    def ChatReceivers(request,
             target,
             options=(),
             channel_credentials=None,
@@ -356,8 +356,8 @@ class Mafia(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/Mafia/GameStatus',
-            mafia__pb2.GameStatusRequest.SerializeToString,
-            mafia__pb2.GameStatusResponse.FromString,
+        return grpc.experimental.unary_unary(request, target, '/Mafia/ChatReceivers',
+            mafia__pb2.ChatReceiversRequest.SerializeToString,
+            mafia__pb2.ChatReceiversResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

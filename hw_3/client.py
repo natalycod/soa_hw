@@ -1,7 +1,8 @@
 import socket
 import threading
+import sys
 
-PORT = 50053
+PORT = 50052
 
 class bcolors:
     HEADER = '\033[95m'
@@ -84,13 +85,15 @@ def write_messages(session_name, user_name):
             message = input()
             send_text(sock, message)
 
-def start():
-    print("Enter name of session you want to connect to")
-    session_name = input()
-    print("Enter your username")
-    user_name = input()
 
-    threading.Thread(target=read_messages, args=(session_name, user_name)).start()
-    threading.Thread(target=write_messages, args=(session_name, user_name)).start()
+if len(sys.argv) < 3:
+    print(bcolors.FAIL + "Please run the command with 2 additional parameters in this order:" + bcolors.ENDC)
+    print(bcolors.OKBLUE + bcolors.BOLD + "session_name (required):" + bcolors.ENDC + bcolors.OKBLUE + "name of session you want to connect to" + bcolors.ENDC)
+    print(bcolors.OKBLUE + bcolors.BOLD + "user_name (required):" + bcolors.ENDC + bcolors.OKBLUE + "your nickname in game" + bcolors.ENDC)
+    exit(0)
 
-start()
+session_name = sys.argv[1]
+user_name = sys.argv[2]
+
+threading.Thread(target=read_messages, args=(session_name, user_name)).start()
+threading.Thread(target=write_messages, args=(session_name, user_name)).start()
