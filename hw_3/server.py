@@ -14,9 +14,7 @@ def get_game_status(session_name):
     with grpc.insecure_channel("localhost:50051") as channel:
         executor = ThreadPoolExecutor()
         stub = mafia_pb2_grpc.MafiaStub(channel)
-        print("Sending game status request")
         resp = stub.GameStatus(mafia_pb2.GameStatusRequest(session_name=session_name))
-        print("Received game status response: " + resp.status)
         return resp.status
 
 def send_message(sock, message):
@@ -43,11 +41,8 @@ class ChatSession:
                 send_message(connections["read"], ", ".join(self.users.keys()))
 
     def send_all(self, user_name, message):
-        try:
-            if get_game_status(self.session_name) == "night":
-                return
-        except:
-            print("not success :(")
+        if get_game_status(self.session_name) == "night":
+            return
         for user, connections in self.users.items():
             send_message(connections["read"], "new_message")
             send_message(connections["read"], user_name)
