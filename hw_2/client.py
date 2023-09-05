@@ -41,7 +41,7 @@ class UserSession:
         response = self._stub.ConnectToServer(mafia_pb2.ConnectToServerMessage(session_name=self.session_name, user_name=self.user_name, users_count=self.users_count))
         if response.HasField("common_error"):
             print("error: " + response.common_error.error_text)
-        
+
         while True:
             response = self._stub.GetNewMessage(mafia_pb2.GetMessageRequest(session_name=self.session_name, user_name=self.user_name))
             if response.HasField("server_message"):
@@ -97,6 +97,6 @@ users_count = 0
 if len(sys.argv) >= 4:
     users_count = int(sys.argv[3])
 
-with grpc.insecure_channel("localhost:50051") as channel:
+with grpc.insecure_channel("server:50051") as channel:
     executor = ThreadPoolExecutor()
     user_session = UserSession(executor, channel, session_name, user_name, users_count)
