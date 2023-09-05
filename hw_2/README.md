@@ -1,15 +1,33 @@
-Запуск сервера:
+Запуск докера:
 
 ```
-python3 server.py
+docker-compose build
+docker-compose up -d
 ```
 
-Запуск клиента:
+Запуск сервера после этого:
+
 ```
-python3 client.py {session_name} {user_name} {users_count}
+docker-compose run server
+```
+
+Запуск одного клиента в отдельной консоли:
+```
+docker-compose run client {session_name} {user_name} {users_count}
 ```
 Где {session_name} - название сессии, к которой хочется подключиться, {user_name} - имя пользователя, {users_count} - необязательное поле, задающее количество игроков.
 {users_count} учитывается только у первого подключившегося к сессии клиента. Если первый клиент не указал {users_count}, сессия заводится на 4 человека.
+
+Для игры нужно запустить {users_count} клиентов с одним и тем же {session_name} и разными {user_name}
+
+Например, самый простой способ начать игру - запустить 4 консоли со следующими командами:
+
+```
+docker-compose run client session user1
+docker-compose run client session user2
+docker-compose run client session user3
+docker-compose run client session user4
+```
 
 После каждого присоединенного пользователя на каждый клиент придет сообщение о новом пользователе и о текущих пользователях в сессии.
 
