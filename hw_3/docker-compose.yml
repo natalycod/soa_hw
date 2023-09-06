@@ -1,0 +1,22 @@
+version: '3.8'
+
+networks:
+  chat_network:
+    driver: bridge
+
+services:
+  server:
+    image: chat-server
+    build:
+      context: .
+      dockerfile: Server.Dockerfile
+    networks:
+      - chat_network
+
+  client:
+    image: chat-client
+    build:
+      context: .
+      dockerfile: Client.Dockerfile
+    networks:
+      - chat_network

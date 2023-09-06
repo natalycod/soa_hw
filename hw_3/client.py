@@ -55,7 +55,7 @@ def send_text(sock, text):
 
 def read_messages(session_name, user_name):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-        sock.connect(('localhost', PORT))
+        sock.connect(('server', PORT))
 
         send_text(sock, "read")
         send_text(sock, session_name)
@@ -73,7 +73,7 @@ def read_messages(session_name, user_name):
 
 def write_messages(session_name, user_name):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-        sock.connect(('localhost', PORT))
+        sock.connect(('server', PORT))
 
         send_text(sock, "write")
         send_text(sock, session_name)

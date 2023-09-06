@@ -23,6 +23,7 @@ class ChatSession:
         self.session_name = session_name
 
     def get_chat_receivers(self, user_name):
+        return self.users.keys()
         with grpc.insecure_channel("localhost:50051") as channel:
             executor = ThreadPoolExecutor()
             stub = mafia_pb2_grpc.MafiaStub(channel)
@@ -86,7 +87,7 @@ class ChatConnection:
 class ChatServer:
     def __init__(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.bind(('localhost', PORT))
+        self.sock.bind(('0.0.0.0', PORT))
         self.sock.listen()
         print("Started server on port", PORT)
         self._listen_to_new_connections()
