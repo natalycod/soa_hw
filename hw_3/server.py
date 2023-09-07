@@ -23,20 +23,17 @@ class ChatSession:
         self.session_name = session_name
 
     def get_chat_receivers(self, user_name):
-        try:
-            with grpc.insecure_channel("localhost:50051") as channel:
-                executor = ThreadPoolExecutor()
-                stub = mafia_pb2_grpc.MafiaStub(channel)
-                resp = stub.ChatReceivers(mafia_pb2.ChatReceiversRequest(session_name=self.session_name, user_name=user_name))
-                if not resp.in_game:
-                    return self.users.keys()
-                result = []
-                for receiver in resp.receivers:
-                    if receiver in self.users:
-                        result.append(receiver)
-                return result
-        except:
-            return self.users.keys()
+        with grpc.insecure_channel("mafia_server:50051") as channel:
+            executor = ThreadPoolExecutor()
+            stub = mafia_pb2_grpc.MafiaStub(channel)
+            resp = stub.ChatReceivers(mafia_pb2.ChatReceiversRequest(session_name=self.session_name, user_name=user_name))
+            if not resp.in_game:
+                return self.users.keys()
+            result = []
+            for receiver in resp.receivers:
+                if receiver in self.users:
+                    result.append(receiver)
+            return result
 
     def add_user(self, user_name, connection_type, connection):
         if user_name not in self.users:

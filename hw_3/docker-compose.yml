@@ -5,6 +5,22 @@ networks:
     driver: bridge
 
 services:
+  mafia_server:
+    image: mafia-server
+    build:
+      context: ../hw_2
+      dockerfile: Server.Dockerfile
+    networks:
+      - chat_network
+
+  mafia_client:
+    image: mafia-client
+    build:
+      context: ../hw_2
+      dockerfile: Client.Dockerfile
+    networks:
+      - chat_network
+
   server:
     image: chat-server
     build:

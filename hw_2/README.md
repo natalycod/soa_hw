@@ -10,12 +10,12 @@ docker-compose up -d
 Запуск сервера после этого:
 
 ```
-docker-compose run server
+docker-compose run mafia_server
 ```
 
 Запуск одного клиента в отдельной консоли:
 ```
-docker-compose run client {session_name} {user_name} {users_count}
+docker-compose run mafia_client {session_name} {user_name} {users_count}
 ```
 Где {session_name} - название сессии, к которой хочется подключиться, {user_name} - имя пользователя, {users_count} - необязательное поле, задающее количество игроков.
 {users_count} учитывается только у первого подключившегося к сессии клиента. Если первый клиент не указал {users_count}, сессия заводится на 4 человека.
@@ -25,23 +25,23 @@ docker-compose run client {session_name} {user_name} {users_count}
 Например, самый простой способ начать игру - запустить 4 консоли со следующими командами:
 
 ```
-docker-compose run client session user1
-docker-compose run client session user2
-docker-compose run client session user3
-docker-compose run client session user4
+docker-compose run mafia_client session user1
+docker-compose run mafia_client session user2
+docker-compose run mafia_client session user3
+docker-compose run mafia_client session user4
 ```
 
 Чтобы начать игру на 8 человек (там будет 2 мафии) - запустить 8 консолей со следующими командами:
 
 ```
-docker-compose run client session user1 8
-docker-compose run client session user2
-docker-compose run client session user3
-docker-compose run client session user4
-docker-compose run client session user5
-docker-compose run client session user6
-docker-compose run client session user7
-docker-compose run client session user8
+docker-compose run mafia_client session user1 8
+docker-compose run mafia_client session user2
+docker-compose run mafia_client session user3
+docker-compose run mafia_client session user4
+docker-compose run mafia_client session user5
+docker-compose run mafia_client session user6
+docker-compose run mafia_client session user7
+docker-compose run mafia_client session user8
 ```
 
 После каждого присоединенного пользователя на каждый клиент придет сообщение о новом пользователе и о текущих пользователях в сессии.

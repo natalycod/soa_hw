@@ -458,7 +458,7 @@ class MafiaConnection(mafia_pb2_grpc.MafiaServicer):
 port = "50051"
 server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
 mafia_pb2_grpc.add_MafiaServicer_to_server(MafiaConnection(), server)
-server.add_insecure_port("[::]:" + port)
+server.add_insecure_port("0.0.0.0:" + port)
 server.start()
 print("Server started, listening on " + port)
 server.wait_for_termination()

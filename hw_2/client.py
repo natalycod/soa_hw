@@ -97,6 +97,6 @@ users_count = 0
 if len(sys.argv) >= 4:
     users_count = int(sys.argv[3])
 
-with grpc.insecure_channel("server:50051") as channel:
+with grpc.insecure_channel("mafia_server:50051") as channel:
     executor = ThreadPoolExecutor()
     user_session = UserSession(executor, channel, session_name, user_name, users_count)

@@ -1,7 +1,6 @@
 import socket
 import threading
 import sys
-from queue import Queue
 
 PORT = 50052
 
@@ -16,106 +15,76 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-queue_read = Queue()
-queue_write = Queue()
-
-def read_messages_to_queue():
-    while True:
-        message = input()
-        queue_read.put(message)
-
-def write_messages_from_queue():
-    while True:
-        if not queue_write.empty():
-            message = queue_write.get()
-            if message.design_name == "OKGREEN" and message.is_major:
-                print(bcolors.OKGREEN + bcolors.BOLD + message.text + bcolors.ENDC)
-            else:
-                print(message.text)
-
 class Message:
     def __init__(self):
         pass
 
-class DesignMessage:
-    def __init__(self, is_major, design_name, text):
-        self.design_name = design_name
-        self.is_major = is_major
-        self.text = text
+def read_one_message(sock):
+    message = Message()
+    message.type = None
+    while not message.type:
+        message.type = sock.recv(1024).decode()
+        sock.send(message.type.encode())
 
-class ChatSession:
-    def __init__(self, session_name, user_name):
-        self.session_name = session_name
-        self.user_name = user_name
-        
-        threading.Thread(target=self.read_messages, args=()).start()
-        threading.Thread(target=self.write_messages, args=()).start()
+    if message.type in ["new_message", "new_connection"]:
+        message.user = None
+        while not message.user:
+            message.user = sock.recv(1024).decode()
+            sock.send(message.user.encode())
 
-    def read_one_message(self, sock):
-        message = Message()
-        message.type = None
-        while not message.type:
-            message.type = sock.recv(1024).decode()
-            sock.send(message.type.encode())
+    if message.type in ["new_message"]:
+        message.text = None
+        while not message.text:
+            message.text = sock.recv(1024).decode()
+            sock.send(message.text.encode())
+    
+    if message.type in ["new_connection"]:
+        message.users = None
+        while not message.users:
+            message.users = sock.recv(1024).decode()
+            sock.send(message.users.encode())
 
-        if message.type in ["new_message", "new_connection"]:
-            message.user = None
-            while not message.user:
-                message.user = sock.recv(1024).decode()
-                sock.send(message.user.encode())
+    return message
 
-        if message.type in ["new_message"]:
-            message.text = None
-            while not message.text:
-                message.text = sock.recv(1024).decode()
-                sock.send(message.text.encode())
-        
-        if message.type in ["new_connection"]:
-            message.users = None
-            while not message.users:
-                message.users = sock.recv(1024).decode()
-                sock.send(message.users.encode())
+def send_text(sock, text):
+    sock.send(text.encode())
+    amount_received = 0
+    while amount_received < len(text):
+        data = sock.recv(1024)
+        amount_received += len(data)
 
-        return message
+def read_messages(session_name, user_name):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.connect(('server', PORT))
 
-    def send_text(self, sock, text):
-        sock.send(text.encode())
-        amount_received = 0
-        while amount_received < len(text):
-            data = sock.recv(1024)
-            amount_received += len(data)
+        send_text(sock, "read")
+        send_text(sock, session_name)
+        send_text(sock, user_name)
 
-    def write_messages(self):
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-            sock.connect(('server', PORT))
+        print("read fully connected")
 
-            self.send_text(sock, "write")
-            self.send_text(sock, self.session_name)
-            self.send_text(sock, self.user_name)
+        while True:
+            message = read_one_message(sock)
+            if message.type == "new_message":
+                print(bcolors.BOLD + bcolors.OKGREEN + message.user + ": " + message.text + bcolors.ENDC + bcolors.ENDC)
+            elif message.type == "new_connection":
+                print(bcolors.BOLD + bcolors.OKBLUE + "New user connected: " + message.user + bcolors.ENDC + bcolors.ENDC)
+                print(bcolors.BOLD + bcolors.OKBLUE + "Current users: " + message.users + bcolors.ENDC + bcolors.ENDC)
 
-            print("write fully connected")
+def write_messages(session_name, user_name):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.connect(('server', PORT))
 
-            while True:
-                if not queue_read.empty():
-                    message = queue_read.get()
-                    self.send_text(sock, message)
+        send_text(sock, "write")
+        send_text(sock, session_name)
+        send_text(sock, user_name)
 
-    def read_messages(self):
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-            sock.connect(('server', PORT))
+        print("write fully connected")
 
-            self.send_text(sock, "read")
-            self.send_text(sock, self.session_name)
-            self.send_text(sock, self.user_name)
+        while True:
+            message = input()
+            send_text(sock, message)
 
-            print("read fully connected")
-
-            while True:
-                message = self.read_one_message(sock)
-                if message.type == "new_message":
-                    queue_write.put(DesignMessage(True, "OKGREEN", message.user + ": " + message.text))
-                elif message.type == "new_connection":
-                    queue_write.put(DesignMessage(True, "OKGREEN", "New user connected: " + message.user))
 
 if len(sys.argv) < 3:
     print(bcolors.FAIL + "Please run the command with 2 additional parameters in this order:" + bcolors.ENDC)
@@ -126,7 +95,5 @@ if len(sys.argv) < 3:
 session_name = sys.argv[1]
 user_name = sys.argv[2]
 
-session = ChatSession(session_name, user_name)
-
-threading.Thread(target=read_messages_to_queue, args=()).start()
-threading.Thread(target=write_messages_from_queue, args=()).start()
+threading.Thread(target=read_messages, args=(session_name, user_name)).start()
+threading.Thread(target=write_messages, args=(session_name, user_name)).start()
