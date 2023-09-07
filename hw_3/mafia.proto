@@ -1,7 +1,106 @@
 syntax = "proto3";
 
 service Mafia {
+    rpc ConnectToServer(ConnectToServerMessage) returns (CommonServerResponse) {}
+    rpc GetNewMessage(GetMessageRequest) returns (GetMessageResponse) {}
+    rpc CheckUser(CheckUserRequest) returns (CommonServerResponse) {}
+    rpc KillUser(KillUserRequest) returns (CommonServerResponse) {}
+    rpc SendChatMessage(SendChatMessageRequest) returns (CommonServerResponse) {}
+    rpc EndDay(EndDayRequest) returns (CommonServerResponse) {}
+    rpc Publish(PublishRequest) returns (CommonServerResponse) {}
+    rpc Blame(BlameRequest) returns (CommonServerResponse) {}
+    rpc Help(HelpRequest) returns (HelpResponse) {}
     rpc ChatReceivers(ChatReceiversRequest) returns (ChatReceiversResponse) {}
+}
+
+message ConnectToServerMessage {
+    string session_name = 1;
+    string user_name = 2;
+    int32 users_count = 3;
+}
+
+message GetMessageRequest {
+    string session_name = 1;
+    string user_name = 2;
+}
+
+message CheckUserRequest {
+    string session_name = 1;
+    string user_name = 2;
+    string check_name = 3;
+}
+
+message KillUserRequest {
+    string session_name = 1;
+    string user_name = 2;
+    string kill_name = 3;
+}
+
+message SendChatMessageRequest {
+    string session_name = 1;
+    string user_name = 2;
+    string text = 3;
+}
+
+message EndDayRequest {
+    string session_name = 1;
+    string user_name = 2;
+}
+
+message PublishRequest {
+    string session_name = 1;
+    string user_name = 2;
+}
+
+message BlameRequest {
+    string session_name = 1;
+    string user_name = 2;
+    string blame_name = 3;
+}
+
+message GetMessageResponse {
+    oneof message_type {
+        NoneMessage none_message = 1;
+        ServerMessage server_message = 2;
+        UserMessage user_message = 3;
+    }
+
+    message NoneMessage {}
+
+    message ServerMessage {
+        string text = 1;
+        bool major_type = 2;
+    }
+
+    message UserMessage {
+        string user_name = 1;
+        string text = 2;
+        bool major_type = 3;
+    }
+}
+
+message CommonServerResponse {
+    oneof message_type {
+        EmptyMessage empty_message = 1;
+        CommonError common_error = 2;
+    }
+
+    message EmptyMessage {}
+
+    message CommonError {
+        string error_text = 1;
+    }
+}
+
+message HelpRequest {}
+
+message HelpResponse {
+    repeated Command commands = 1;
+
+    message Command {
+        string command = 1;
+        string explanation = 2;
+    }
 }
 
 message ChatReceiversRequest {

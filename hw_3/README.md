@@ -36,7 +36,7 @@ docker-compose run mafia_client session user4
 Чтобы начать игру на 8 человек (там будет 2 мафии) - запустить 8 консолей со следующими командами:
 
 ```
-docker-compose run mafia_client session user1 8
+docker-compose run mafia_client session user1
 docker-compose run mafia_client session user2
 docker-compose run mafia_client session user3
 docker-compose run mafia_client session user4
