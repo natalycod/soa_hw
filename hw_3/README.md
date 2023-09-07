@@ -1,23 +1,25 @@
 ## Запуск всего
 
-### Запуск докера:
+Запуск докера:
 
 ```
 docker-compose build
 docker-compose up -d
 ```
 
-### Запуск Мафии (также описан в ../hw_2)
-
-Запуск сервера:
-
+Запуск сервера мафии:
 ```
 docker-compose run mafia_server
 ```
 
-Запуск одного клиента Мафии в отдельной консоли:
+Запуск сервера чата:
 ```
-docker-compose run mafia_client {session_name} {user_name} {users_count}
+docker-compose run server
+```
+
+Запуск одного клиента в отдельной консоли:
+```
+docker-compose run client {session_name} {user_name} {users_count}
 ```
 Где {session_name} - название сессии, к которой хочется подключиться, {user_name} - имя пользователя, {users_count} - необязательное поле, задающее количество игроков.
 {users_count} учитывается только у первого подключившегося к сессии клиента. Если первый клиент не указал {users_count}, сессия заводится на 4 человека.
@@ -36,7 +38,7 @@ docker-compose run mafia_client session user4
 Чтобы начать игру на 8 человек (там будет 2 мафии) - запустить 8 консолей со следующими командами:
 
 ```
-docker-compose run mafia_client session user1
+docker-compose run mafia_client session user1 8
 docker-compose run mafia_client session user2
 docker-compose run mafia_client session user3
 docker-compose run mafia_client session user4
@@ -48,44 +50,7 @@ docker-compose run mafia_client session user8
 
 После каждого присоединенного пользователя на каждый клиент придет сообщение о новом пользователе и о текущих пользователях в сессии.
 
-### Запуск чата
-
-Запуск сервера:
-
-```
-docker-compose run server
-```
-
-Запуск одного клиента Чата в отдельной консоли:
-```
-docker-compose run client {session_name} {user_name}
-```
-Где {session_name} - название сессии, к которой хочется подключиться, {user_name} - имя пользователя. Чтобы Чат был синхронизирован с Мафией, названия {session_name} и {user_name} должны совпадать с этим же пользователем в Мафии.
-
-Например, для игры в 4 человека нужно запустить 4 чат-консоли со следующими командами:
-
-```
-docker-compose run client session user1
-docker-compose run client session user2
-docker-compose run client session user3
-docker-compose run client session user4
-```
-
-Чтобы начать игру на 8 человек (там будет 2 мафии) - запустить 8 консолей со следующими командами:
-
-```
-docker-compose run client session user1 8
-docker-compose run client session user2
-docker-compose run client session user3
-docker-compose run client session user4
-docker-compose run client session user5
-docker-compose run client session user6
-docker-compose run client session user7
-docker-compose run client session user8
-```
-
-
-## Процесс игры в Мафию (происходит в mafia_client, описан также в ../hw_2)
+## Процесс игры
 
 Ход игры:
 1. Когда набирается {users_count} человек, игра автоматически начинается. Каждому игроку приходит сообщение с его ролью, выбранной случайно ({users_count} / 4 мафий, 1 комиссар, остальные мирные)
@@ -105,7 +70,6 @@ docker-compose run client session user8
 
 Мертвые игроки могут использовать только команду "help"
 
-## Процесс Чата
+## P.S.
 
-* Чтобы отправить сообщение, достаточно набрать его в консоли Чата и нажать ENTER. Сообщение автоматически отправится всем участникам чата
-* Если в Мафии идет игра с тем же названием и в ней ночь, писать друг другу могут только игроки с ролью "мафия". Сообщения, написанные ночью другими игроками, доставляться не будут
+hw_3 для пользователя ничем не отличается от hw_2, однако здесь чат вынесен в отдельный сервер и взаимодействие между новым клиентом и чат-сервером осуществляется через сокеты
