@@ -28,12 +28,20 @@ def write_messages_from_queue():
     while True:
         if not queue_write.empty():
             message = queue_write.get()
-            print(message)
-
+            if message.design_name == "OKGREEN" and message.is_major:
+                print(bcolors.OKGREEN + bcolors.BOLD + message.text + bcolors.ENDC)
+            else:
+                print(message.text)
 
 class Message:
     def __init__(self):
         pass
+
+class DesignMessage:
+    def __init__(self, is_major, design_name, text):
+        self.design_name = design_name
+        self.is_major = is_major
+        self.text = text
 
 class ChatSession:
     def __init__(self, session_name, user_name):
@@ -105,9 +113,9 @@ class ChatSession:
             while True:
                 message = self.read_one_message(sock)
                 if message.type == "new_message":
-                    queue_write.put(message.user + ": " + message.text)
+                    queue_write.put(DesignMessage(True, "OKGREEN", message.user + ": " + message.text))
                 elif message.type == "new_connection":
-                    queue_write.put("New user connected: " + message.user)
+                    queue_write.put(DesignMessage(True, "OKGREEN", "New user connected: " + message.user))
 
 if len(sys.argv) < 3:
     print(bcolors.FAIL + "Please run the command with 2 additional parameters in this order:" + bcolors.ENDC)
