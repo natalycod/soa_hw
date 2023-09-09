@@ -74,8 +74,8 @@ class UserSession:
         while True:
             command = input()
             if command.startswith("chat "):
-#                response = self._stub.SendChatMessage(mafia_pb2.SendChatMessageRequest(session_name=self.session_name, user_name=self.user_name, text=self.user_name + ": " + command[5:]))
-#                self._handle_common_response_error(response)
+                response = self._stub.SendChatMessage(mafia_pb2.SendChatMessageRequest(session_name=self.session_name, user_name=self.user_name, text=self.user_name + ": " + command[5:]))
+                self._handle_common_response_error(response)
 
                 write_connection = pika.BlockingConnection(pika.ConnectionParameters('rabbit_mq'))
                 write_channel = write_connection.channel()
