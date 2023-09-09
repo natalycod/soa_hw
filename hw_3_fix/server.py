@@ -93,9 +93,8 @@ class User:
 
 def create_session_queue(session_name):
     def _callback_session_queue(ch, method, properties, body):
-        current_sessions["session"].send_chat_message("user1", "Hello!!!")
-    #    session_name = properties.decode()["reply_to"]
-    #    current_sessions["session"].send_chat_message("user1", body.decode())
+        session_name = properties.decode()["reply_to"]
+        current_sessions[session_name].send_chat_message("user1", body.decode())
 
     while True:
         connection = pika.BlockingConnection(pika.ConnectionParameters('0.0.0.0'))
