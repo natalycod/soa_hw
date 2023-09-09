@@ -36,16 +36,10 @@ class UserSession:
         self._stub = mafia_pb2_grpc.MafiaStub(self._channel)
         self._queue = Queue()
 
-        self.write_connection = pika.BlockingConnection(pika.ConnectionParameters('rabbit_mq'))
-        self.write_channel = self.write_connection.channel()
-        self.write_channel.queue_declare(queue=self.session_name)
-        print("write channel created")
-
         self.read_connection = pika.BlockingConnection(pika.ConnectionParameters('rabbit_mq'))
         self.read_channel = self.read_connection.channel()
         self.read_channel.queue_declare(queue=self.session_name + "#" + self.user_name)
         self.read_channel.basic_consume(queue=self.session_name + "#" + self.user_name, auto_ack=True, on_message_callback=_handle_queue_chat_message)
-        print("read channel created")
 
         queue = Queue()
         threading.Thread(target=self.listen_for_messages, daemon=False, args=[]).start()
@@ -80,9 +74,13 @@ class UserSession:
         while True:
             command = input()
             if command.startswith("chat "):
-                response = self._stub.SendChatMessage(mafia_pb2.SendChatMessageRequest(session_name=self.session_name, user_name=self.user_name, text=self.user_name + ": " + command[5:]))
-                self._handle_common_response_error(response)
-                self.write_channel.basic_publish(exchange='', routing_key=self.session_name, body=self.user_name + ": " + command[5:])
+#                response = self._stub.SendChatMessage(mafia_pb2.SendChatMessageRequest(session_name=self.session_name, user_name=self.user_name, text=self.user_name + ": " + command[5:]))
+#                self._handle_common_response_error(response)
+
+                write_connection = pika.BlockingConnection(pika.ConnectionParameters('rabbit_mq'))
+                write_channel = write_connection.channel()
+                write_channel.queue_declare(queue=self.session_name)
+                write_channel.basic_publish(exchange='', routing_key=self.session_name, body=self.user_name + ": " + command[5:])
             if command == "end_day":
                 response = self._stub.EndDay(mafia_pb2.EndDayRequest(session_name=self.session_name, user_name=self.user_name))
                 self._handle_common_response_error(response)

@@ -97,11 +97,12 @@ def create_session_queue(session_name):
     #    session_name = properties.decode()["reply_to"]
     #    current_sessions["session"].send_chat_message("user1", body.decode())
 
-    connection = pika.BlockingConnection(pika.ConnectionParameters('0.0.0.0'))
-    channel = connection.channel()
-    channel.queue_declare(queue=session_name)
-    channel.basic_consume(queue=session_name, auto_ack=True, on_message_callback=_callback_session_queue)
-    channel.start_consuming()
+    while True:
+        connection = pika.BlockingConnection(pika.ConnectionParameters('0.0.0.0'))
+        channel = connection.channel()
+        channel.queue_declare(queue=session_name)
+        channel.basic_consume(queue=session_name, auto_ack=True, on_message_callback=_callback_session_queue)
+        channel.start_consuming()
 
 class Session:
     def __init__(self, session_name, users_count = MIN_USERS_COUNT):
