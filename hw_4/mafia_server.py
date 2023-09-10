@@ -7,6 +7,7 @@ import mafia_pb2_grpc
 import random
 import threading
 import requests
+import time
 
 from queue import Queue
 from enum import Enum
@@ -114,6 +115,7 @@ class Session:
         self.ready_to_end_day_count = 0
         self.ready_to_end_night_count = 0
         self.stage_messages = []
+        self.start_time = 0
 
         threading.Thread(target=self._keep_relevant, daemon=False, args=[]).start()
         threading.Thread(target=self._start_queue_connection, daemon=False, args=[]).start()
@@ -157,6 +159,7 @@ class Session:
             return False
         self.game_stage = GameStage.DAY
         self._clear_stage()
+        self.start_time = time.time()
         for name, user in self.users.items():
             message = Message()
             message.make_server_message("--- GAME STARTED ---", True)
@@ -257,6 +260,7 @@ class Session:
             else:
                 peace_cnt += 1
         
+        end_time = time.time()
         main_message = Message()
         main_message.make_server_message("--- END ---", True)
 
@@ -271,6 +275,7 @@ class Session:
                     resp = requests.post(REST_HOST + "/add_lose", json=req)
                 else:
                     resp = requests.post(REST_HOST + "/add_win", json=req)
+                resp = requests.post(REST_HOST + "/add_game_time", json={"name": name, "sec": end_time - self.start_time})
         elif mafia_cnt >= peace_cnt:
             self.stage_messages.append(main_message)
             message = Message()
@@ -282,6 +287,7 @@ class Session:
                     resp = requests.post(REST_HOST + "/add_win", json=req)
                 else:
                     resp = requests.post(REST_HOST + "/add_lose", json=req)
+                resp = requests.post(REST_HOST + "/add_game_time", json={"name": name, "sec": end_time - self.start_time})
         else:
             return False
         self._send_stage_messages()

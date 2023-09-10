@@ -133,6 +133,7 @@ def generate_pdf(user):
     pdf.cell(70, 10, 'Count of games: ' + str(user.win_count + user.lose_count), ln=1)
     pdf.cell(70, 10, 'Count of wins: ' + str(user.win_count), ln=1)
     pdf.cell(70, 10, 'Count of loses: ' + str(user.lose_count), ln=1)
+    pdf.cell(70, 10, 'Time in game (seconds): ' + str(user.game_time), ln=1)
 
     path = user.name + ".pdf"
     pdf.output(path).encode('latin-1')
@@ -149,6 +150,7 @@ def get_json():
     json["win_count"] = user.win_count
     json["lose_count"] = user.lose_count
     json["game_count"] = user.win_count + user.lose_count
+    json["game_time"] = user.game_time
     return json
 
 @app.route("/get_pdf", methods=["GET"])

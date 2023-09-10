@@ -5,7 +5,6 @@ RUN pip3 install grpcio grpcio-tools
 WORKDIR /mafia
 
 COPY mafia.proto ./
-COPY pdfs ./
 
 RUN python3 -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. mafia.proto
 RUN pip install --upgrade pip
