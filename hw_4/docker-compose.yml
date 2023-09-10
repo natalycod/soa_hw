@@ -1,0 +1,46 @@
+version: '3.8'
+
+networks:
+  grpc_network:
+    driver: bridge
+
+services:
+  rabbit_mq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+      - 5672:5672
+    networks:
+      - grpc_network
+
+  mafia_server:
+    image: mafia-server
+    build:
+      context: .
+      dockerfile: MafiaServer.Dockerfile
+    networks:
+      - grpc_network
+  
+  rest_server:
+    image: rest-server
+    build:
+      context: .
+      dockerfile: Server.Dockerfile
+    networks:
+      - grpc_network
+
+  mafia_client:
+    image: mafia-client
+    build:
+      context: .
+      dockerfile: Client.Dockerfile
+    networks:
+      - grpc_network
+  
+  rest_client:
+    image: rest-client
+    build:
+      context: .
+      dockerfile: RestClient.Dockerfile
+    networks:
+      - grpc_network
